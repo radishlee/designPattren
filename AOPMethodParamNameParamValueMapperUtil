@@ -1,0 +1,101 @@
+package somecase;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
+
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * Created by liruibo on 2018/1/19.
+ */
+public class AOPMethodParamNameParamValueMapperUtil {
+
+    /***
+     * @describe 构造redis keylist
+     *     根据参数名称的索引号 过滤参数值的map 待组合key的组合
+     * @auther radish
+     * @param point aop切入点
+     * @return argName_argVal_Map  参数名称-参数值-map
+     */
+    public static Map<String, String> getArgNameArgValMap(ProceedingJoinPoint point) {
+        //构造method
+        Method method = ((MethodSignature) point.getSignature()).getMethod();
+
+        //根据method 构造参数名称 索引号 map
+        //根据point 构造索引号 参数值 map
+        //根据索引号 构造参数名称参数值map
+        return buildArgNameArgValMap(buildArgumentNameIndexMap(getParameterNames(method)), buildIndexArgumentValueMap(point.getArgs()));
+    }
+
+
+    /***
+     * @describe 构造redis keylist
+     *     根据参数名称的索引号 过滤参数值的map 待组合key的组合
+     * @auther radish
+     * @param argsName_idx_map  参数名称-索引号-map
+     * @param idx_argsValue_map 索引号-参数值-map
+     * @return argName_argVal_Map  参数名称-参数值-map
+     */
+    private static Map<String, String> buildArgNameArgValMap(Map<String, Integer> argsName_idx_map, Map<Integer, String> idx_argsValue_map) {
+        Map<String, String> argName_argVal_Map = new HashMap<>();
+        if (argsName_idx_map != null && !argsName_idx_map.isEmpty() && idx_argsValue_map != null && !idx_argsValue_map.isEmpty()) {
+            for (Map.Entry<String, Integer> entry : argsName_idx_map.entrySet()) {
+                String argumentValue = idx_argsValue_map.get(entry.getValue());
+                argName_argVal_Map.put(entry.getKey(), argumentValue);
+            }
+        }
+        return argName_argVal_Map;
+    }
+
+    /***
+     *  @describe 构造 索引-参数名称 map
+     * @auther radish
+     * @param  parameterNames 参数名称
+     * @return argsName_Idx_Map 参数名称-索引号-map
+     */
+    private static Map<String, Integer> buildArgumentNameIndexMap(String parameterNames[]) {
+        Map<String, Integer> argsName_Idx_Map = new HashMap<>();
+        if (parameterNames != null && parameterNames.length > 0) {
+            for (int i = 0; i < parameterNames.length; i++) {
+                argsName_Idx_Map.put(parameterNames[i], i);
+            }
+        }
+        return argsName_Idx_Map;
+    }
+
+
+    /***
+     * @describe 获取参数名称
+     * @auther radish
+     * @param method 反射类的method对象
+     *               java.lang.reflect.Method;
+     * @return paramterNames 参数名称
+     */
+    private static String[] getParameterNames(Method method) {
+        if (method != null) {
+            LocalVariableTableParameterNameDiscoverer parameterNameDiscoverer = new LocalVariableTableParameterNameDiscoverer();
+            return parameterNameDiscoverer.getParameterNames(method);
+        }
+        return null;
+    }
+
+
+    /***
+     * @describe 构造 索引-参数值 map
+     * @auther radish
+     * @param  argumentValues  参数值
+     * @return idx_argsValueMap 索引号-参数值-map
+     */
+    private static Map<Integer, String> buildIndexArgumentValueMap(Object[] argumentValues) {
+        Map<Integer, String> idx_argsValueMap = new HashMap<>();
+        if (argumentValues != null && argumentValues.length > 0) {
+            for (int i = 0; i < argumentValues.length; i++) {
+                idx_argsValueMap.put(i, String.valueOf(argumentValues[i]));
+            }
+        }
+        return idx_argsValueMap;
+    }
+}
