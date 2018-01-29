@@ -20,14 +20,14 @@ public class AOPMethodParamNameParamValueMapperUtil {
      * @param point aop切入点
      * @return argName_argVal_Map  参数名称-参数值-map
      */
-    public static Map<String, String> getArgNameArgValMap(ProceedingJoinPoint point) {
+    public static Map<String, Object> getArgNameArgValMap(ProceedingJoinPoint point) {
         //构造method
         Method method = ((MethodSignature) point.getSignature()).getMethod();
 
         //根据method 构造参数名称 索引号 map
         //根据point 构造索引号 参数值 map
         //根据索引号 构造参数名称参数值map
-        return buildArgNameArgValMap(buildArgumentNameIndexMap(getParameterNames(method)), buildIndexArgumentValueMap(point.getArgs()));
+        return buildArgNameArgValMap(getParameterNames(method), point.getArgs());
     }
 
 
@@ -35,16 +35,15 @@ public class AOPMethodParamNameParamValueMapperUtil {
      * @describe 构造redis keylist
      *     根据参数名称的索引号 过滤参数值的map 待组合key的组合
      * @auther radish
-     * @param argsName_idx_map  参数名称-索引号-map
-     * @param idx_argsValue_map 索引号-参数值-map
+     * @param argsNames  参数名称
+     * @param argsNames 参数值
      * @return argName_argVal_Map  参数名称-参数值-map
      */
-    private static Map<String, String> buildArgNameArgValMap(Map<String, Integer> argsName_idx_map, Map<Integer, String> idx_argsValue_map) {
-        Map<String, String> argName_argVal_Map = new HashMap<>();
-        if (argsName_idx_map != null && !argsName_idx_map.isEmpty() && idx_argsValue_map != null && !idx_argsValue_map.isEmpty()) {
-            for (Map.Entry<String, Integer> entry : argsName_idx_map.entrySet()) {
-                String argumentValue = idx_argsValue_map.get(entry.getValue());
-                argName_argVal_Map.put(entry.getKey(), argumentValue);
+    private static Map<String, Object> buildArgNameArgValMap(String argsNames[], Object argsValues[]) {
+        Map<String, Object> argName_argVal_Map = new HashMap<>();
+        if (argsNames != null && argsNames.length > 0 && argsValues != null && argsValues.length > 0) {
+            for (int i = 0; i < argsNames.length; i++) {
+                argName_argVal_Map.put(argsNames[i], argsValues[i]);
             }
         }
         return argName_argVal_Map;
@@ -89,13 +88,14 @@ public class AOPMethodParamNameParamValueMapperUtil {
      * @param  argumentValues  参数值
      * @return idx_argsValueMap 索引号-参数值-map
      */
-    private static Map<Integer, String> buildIndexArgumentValueMap(Object[] argumentValues) {
-        Map<Integer, String> idx_argsValueMap = new HashMap<>();
+    private static Map<Integer, Object> buildIndexArgumentValueMap(Object[] argumentValues) {
+        Map<Integer, Object> idx_argsValueMap = new HashMap<>();
         if (argumentValues != null && argumentValues.length > 0) {
             for (int i = 0; i < argumentValues.length; i++) {
-                idx_argsValueMap.put(i, String.valueOf(argumentValues[i]));
+                idx_argsValueMap.put(i, argumentValues[i]);
             }
         }
         return idx_argsValueMap;
     }
 }
+
