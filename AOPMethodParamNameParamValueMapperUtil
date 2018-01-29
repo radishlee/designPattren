@@ -24,8 +24,6 @@ public class AOPMethodParamNameParamValueMapperUtil {
         //构造method
         Method method = ((MethodSignature) point.getSignature()).getMethod();
 
-        //根据method 构造参数名称 索引号 map
-        //根据point 构造索引号 参数值 map
         //根据索引号 构造参数名称参数值map
         return buildArgNameArgValMap(getParameterNames(method), point.getArgs());
     }
@@ -50,23 +48,6 @@ public class AOPMethodParamNameParamValueMapperUtil {
     }
 
     /***
-     *  @describe 构造 索引-参数名称 map
-     * @auther radish
-     * @param  parameterNames 参数名称
-     * @return argsName_Idx_Map 参数名称-索引号-map
-     */
-    private static Map<String, Integer> buildArgumentNameIndexMap(String parameterNames[]) {
-        Map<String, Integer> argsName_Idx_Map = new HashMap<>();
-        if (parameterNames != null && parameterNames.length > 0) {
-            for (int i = 0; i < parameterNames.length; i++) {
-                argsName_Idx_Map.put(parameterNames[i], i);
-            }
-        }
-        return argsName_Idx_Map;
-    }
-
-
-    /***
      * @describe 获取参数名称
      * @auther radish
      * @param method 反射类的method对象
@@ -80,22 +61,6 @@ public class AOPMethodParamNameParamValueMapperUtil {
         }
         return null;
     }
-
-
-    /***
-     * @describe 构造 索引-参数值 map
-     * @auther radish
-     * @param  argumentValues  参数值
-     * @return idx_argsValueMap 索引号-参数值-map
-     */
-    private static Map<Integer, Object> buildIndexArgumentValueMap(Object[] argumentValues) {
-        Map<Integer, Object> idx_argsValueMap = new HashMap<>();
-        if (argumentValues != null && argumentValues.length > 0) {
-            for (int i = 0; i < argumentValues.length; i++) {
-                idx_argsValueMap.put(i, argumentValues[i]);
-            }
-        }
-        return idx_argsValueMap;
-    }
 }
+
 
